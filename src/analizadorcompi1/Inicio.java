@@ -4,7 +4,15 @@
  * and open the template in the editor.
  */
 package analizadorcompi1;
+import java.io.BufferedReader;
 import javax.swing.JOptionPane;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.*;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -95,6 +103,11 @@ public class Inicio extends javax.swing.JFrame {
         jMenuBar1.add(MenuAbrir);
 
         MenuGuardar.setText("Guardar ");
+        MenuGuardar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                MenuGuardarMousePressed(evt);
+            }
+        });
         jMenuBar1.add(MenuGuardar);
 
         MenuGuardarComo.setText("Guardar Como");
@@ -153,9 +166,65 @@ public class Inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_bttAnalizarActionPerformed
 
     private void MenuAbrirMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MenuAbrirMousePressed
-        JOptionPane.showMessageDialog(null, "Abrir el archivo");
+        //JOptionPane.showMessageDialog(null, "Abrir el archivo");
+        String ruta = null;
+        JFileChooser seleccionar = new JFileChooser();
+        File archivo; 
+        FileInputStream entrada; 
+        FileOutputStream salida; 
+        
+        seleccionar.setFileFilter(new FileNameExtensionFilter("Expresiones regulares", "er"));
+        int opcion = seleccionar.showOpenDialog(null);
+        if(opcion == JFileChooser.APPROVE_OPTION)
+        {
+            ruta = seleccionar.getSelectedFile().getAbsolutePath();
+        }
+        String texto = "";
+        
+        String documento = new String(), path = ruta;
+        archivo = new File(path);
+        FileReader leer = null;
+        BufferedReader docEntrada  = null;
+        try {
+            leer = new FileReader(archivo);
+            docEntrada = new BufferedReader(leer);
+            while((texto = docEntrada.readLine()) != null)
+            {
+                documento += texto + "\n";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            try {
+                if(null != leer)
+                {
+                    leer.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+        AreaEntrada.setText(documento);
     }//GEN-LAST:event_MenuAbrirMousePressed
 
+    private void MenuGuardarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MenuGuardarMousePressed
+        try {
+            String nombre = "";
+            JFileChooser MiArchivo = new JFileChooser(System.getProperty("user.dir"));
+            MiArchivo.showSaveDialog(this);
+            File guardar = MiArchivo.getSelectedFile();
+            if(guardar != null)
+            {
+                nombre = MiArchivo.getSelectedFile().getName();
+                FileWriter Guardado = new FileWriter(guardar+".er");
+                Guardado.write(AreaEntrada.getText());
+                Guardado.close();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }//GEN-LAST:event_MenuGuardarMousePressed
+    
     /**
      * @param args the command line arguments
      */
